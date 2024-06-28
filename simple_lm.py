@@ -55,7 +55,7 @@ def estimate_loss(model):
     
     return out
 
-class SimpleLMPModel(nn.Module):
+class SimpleLanguageModel(nn.Module):
     def __init__(self, vocab_size):
         super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, vocab_size) # representing each token as a vector of dim=65 (vocab_size)
@@ -86,7 +86,7 @@ class SimpleLMPModel(nn.Module):
             idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
         return idx
     
-model = SimpleLMPModel(vocab_size).to(device)
+model = SimpleLanguageModel(vocab_size).to(device)
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
