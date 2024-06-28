@@ -219,6 +219,8 @@ with torch.no_grad():
     model.load_state_dict(torch.load('saved_transformer.pth', map_location=device))
 
     # context = torch.zeros(1,1, dtype=torch.long, device=device)
-    context = torch.tensor(encode('The meaning of life is')).reshape(1, -1).to(device)
+    # context = torch.tensor(encode('The meaning of life is')).reshape(1, -1).to(device)
+    context = torch.tensor(encode('I say unto you, what he hath done famously, he did it to that end')).reshape(1, -1).to(device)
+    
     generated = model.generate(context, 500)[0].tolist()
     print(f"\n[Generated Text]:\n {decode(generated)}")
