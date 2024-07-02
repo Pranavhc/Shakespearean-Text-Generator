@@ -21,7 +21,7 @@ device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # torch.manual_seed(1337)
 
-with open('input.txt', 'r', encoding='utf-8') as f: text = f.read()
+with open('resources/input.txt', 'r', encoding='utf-8') as f: text = f.read()
 
 # all the unique characters 
 chars = sorted(list(set(text)))
@@ -114,6 +114,7 @@ class FeedForward(nn.Module):
     def __init__(self, n_embd):
         super().__init__()
 
+        # inner hidden layer is 4 times the size of the embedding dimension
         self.net = nn.Sequential(  
             nn.Linear(n_embd, 4 * n_embd),
             nn.ReLU(),
@@ -212,15 +213,24 @@ def train():
         optimizer.step()
     
     torch.save(model.state_dict(), 'saved_transformer.pth')
-# train()                                                       # 4500/5000: Train loss - 1.1183 - Val loss - 1.47693
+# train()
 
 # generate some text
-with torch.no_grad():    
-    model.load_state_dict(torch.load('saved_transformer.pth', map_location=device))
+with torch.no_grad():
+    saved_models = [
+        'models/saved_transformer.pth',                    # 4500/5000: Train loss - 1.1183 - Val loss - 1.47693
+        'models/overfit_saved_transformer_10kepochs.pth'   # 5000/5000: Train loss - 0.7708 - Val loss - 1.63905
+    ]
 
-    # context = torch.zeros(1,1, dtype=torch.long, device=device)
-    # context = torch.tensor(encode('The meaning of life is')).reshape(1, -1).to(device)
-    context = torch.tensor(encode('I say unto you, what he hath done famously, he did it to that end')).reshape(1, -1).to(device)
+    model.load_state_dict(torch.load(saved_models[1], map_location=device)) 
+
+    start_prompts = [
+        'The meaning of life is',
+        'I say unto you, what he hath done famously, he did it to that end',
+        'I am upon my journey forthwith with resolve and due diligence'
+    ]
     
-    generated = model.generate(context, 500)[0].tolist()
+    # context = torch.zeros(1,1, dtype=torch.long, device=device)
+    start_idx = torch.tensor(encode(start_prompts[2])).reshape(1, -1).to(device)
+    generated = model.generate(start_idx, 500)[0].tolist()
     print(f"\n[Generated Text]:\n {decode(generated)}")
