@@ -218,8 +218,9 @@ def train():
 # generate some text
 with torch.no_grad():
     saved_models = [
-        'models/saved_transformer.pth',                    # 4500/5000: Train loss - 1.1183 - Val loss - 1.47693
-        'models/overfit_saved_transformer_10kepochs.pth'   # 5000/5000: Train loss - 0.7708 - Val loss - 1.63905
+        'models/saved_transformer.pth',                          #   4500/5000: Train loss - 1.1183 - Val loss - 1.47693
+        'models/overfit_saved_transformer_10kepochs.pth'         # 10000/10000: Train loss - 0.7708 - Val loss - 1.63905
+        'models/less_overfit_saved_transformer_10k_epochs.pth'   # 10000/10000: Train loss - 1.0233 - Val loss - 1.50121
     ]
 
     model.load_state_dict(torch.load(saved_models[1], map_location=device)) 
