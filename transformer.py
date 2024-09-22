@@ -36,7 +36,7 @@ decode = lambda li: ''.join([idx_to_char[i] for i in li])
 # train-test split
 data = torch.tensor(encode(text), dtype=torch.long, device=device)
 split = int(0.9 * len(data))
-train_data, val_data = data[:split], data[split:]
+train_data, val_data = data[:split], data[split:]   
 
 # data loader - gives a batch of block_size characters
 def get_batch(split):
@@ -177,14 +177,15 @@ class AutoregressiveTransformer(nn.Module):
         return logits, loss
     
     def generate(self, idx, max_new_tokens):
+        # The model looks at the last block_size (the context_length) tokens to predict the next token.
         # idx is (B, T) array of indices in the current context
 
         for _ in range(max_new_tokens):
             # crop idx to the last block_size tokens since the positional embedding is fixed to that length
-            idx_cond = idx[:, -block_size:] # only consider the last block_size tokens
+            current_context = idx[:, -block_size:] # only consider the last block_size tokens
+            logits, loss = self(current_context)
             
             # focus on the last time step, entire context that the model has processed up to this point.
-            logits, loss = self(idx_cond)
             logits = logits[:, -1, :] # becomes (B, C)
             
             probs = F.softmax(logits, dim=-1) # (B, C)
